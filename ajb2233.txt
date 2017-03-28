@@ -1,0 +1,36 @@
+Alex Barkume
+
+1) Bob cannot be sure he is talking to Alice because this is susceptible to a reflection attack if an intruder Trudy is quick enough. Here is what can happen. Trudy initiates contact with Bob claiming to be Alice and sends nonce rA in the clear. Bob responds with an encrypted timestamp appended to rA and rB in the clear. This protocol is designed so that the nonce rB and the timestamp must be encrypted using the shared key and sent back to Bob, so Bob can assume that if he gets that back he must be talking to someone with the shared secret key, Alice. However, Trudy can use a reflection attack to get Bob to encrypt this. After receiving rB in the clear, Trudy can quickly open another connection with Bob claiming again to be Alice but this time sending him rB in the clear. Bob will encrypt this with the timestamp and send it back to Trudy. Now, Trudy has the encrypted rB and timestamp and can send this back to Bob in the initial connection. If this all happens within 0.5 seconds, in the initial connection Bob will accept the encrypted value he gets and believe he is talking to Alice, even though he is talking to Trudy. 
+However, Alice can be sure she is talking to Bob. This would not work the other way around because Alice initiates. Therefore, as long as she does not use the same nonce that she encrypted in a different connection within 0.5 seconds, the intruder will not be able to encrypt her nonce with the timestamp and be unable to impersonate Bob.
+This protocol can be fixed if the original sender of a nonce appends his name. Then, Bob will see it is his name appended to the nonce Trudy sends and will not encrypt it, making the reflection attack impossible.  
+
+
+
+2)
+a) Alice knows she is talking to the real KDC because after she sends it her nonce, it responds with the nonce (as well as Bob’s name, Bob and Alice’s shared key, and the ticket) encrypted with the shared secret between Alice and the KDC. Since only the KDC and Alice have this shared secret, and she gets back her nonce encrypted with it, she can be sure she is talking to the KDC. 
+Alice can be sure she is talking to Bob assuming she trusts the KDC. This is because the ticket Alice is sent by the KDC is encrypted with the secret key shared by Bob and the KDC. Therefore, when she sends the ticket along with a nonce encrypted with Bob and Alice’s shared secret, the only way the other side could decrypt the ticket is if he has the secret key shared by Bob and the KDC (and is therefore Bob (or the KDC, but the KDC is trusted)). Bob responds with the nonce and his own nonce appended to it encrypted with Kab, so when Alice receives that she knows who she is talking to must have Kab, which wcould have only be obtained by decrypting the ticket, which only could have been done by Bob, so she is sure she is talking to Bob. She then sends Bob’s nonce encrypted with Kab back to him to verify that she has Kab as well. 
+
+b) Yes, the KDC could impersonate Bob to Alice or Alice to Bob, which is why the KDC must be trusted. This is because the KDC has knowledge of every key involved. So it could impersonate Alice by initiating contact with Bob, sending him a nonce encrypted with Kab and the ticket (all of which it has knowledge of). The protocol would continue with the KDC impersonating Alice and Bob seamlessly until Bob believed he was talking to Alice. Similarly, it could impersonate Bob to Alice. After Alice made initial contact with the encrypted nonce and the ticket, the KDC could decrypt the nonce and append its own, encrypt them with Kab, and respond. Since the other side apparently had Kb and clearly had Kab, Alice would think she was talking to Bob. 
+
+
+3) a) 
+Scar or cut or any other injury on the face (burns)
+Aging
+Movement of the face during the scan
+
+b) First, its not deterministic. A password you either know or do not, it is always either right or wrong for the same input. For fingerprints, it is not deterministic. This means the same fingerprint can sometimes yield a positive and sometimes yield a negative. This can be related to the scanner not working properly, the finger not placed exactly the right way, or maybe a burn on the finger. 
+Another issue with fingerprints is that they cannot be changed. If someone discovers your password, you can easily change it. But if someone somehow gets a hold of your fingerprint (something we leave everywhere whenever we touch anything), they could authenticate themselves as you and you would have no way of changing it. 
+
+4)
+a) This signature is the contents of the certificate hashed and encrypted with the issuer’s private key. Then, anyone looking at the certificate can decrypt this with the issuer’s public key and hash the contents of the certificate and compare the values. This confirms that this certificate was issued by someone with the issuer’s private key, not a malicious intruder, so if the issuer can be trusted then whoever the certificate is issued to can also be trusted.
+b) The browser first decrypts the signature of the website’s certificate using the website’s public key. The browser then hashes the certificate using the hash algorithm found in the certificate and compares these two values. If they are the same, it knows the website signed this certificate. The browser then checks time period, usage, required formats, and Certificate Revocation List to make sure the certificate is still valid and being used in the correct way. If so, it trusts this certificate, given it trusts it CA. Now, it must make sure it trusts its CA. It does this by carrying out the same process on the CA: decrypting the signature, comparing the value to the hashed certificate, and making sure the time period, usage, required format, and CRL all check out. If the CA is a browser default trusted certificate, then the verification stops here and the website is trusted. Otherwise, the CA must have a CA of its own, and this process must continue up the tree all the way until the Root CA that is a browser default trusted CA is verified. 
+c) The browser must also make sure it ensures that the time period is valid, the usage matches how the certificate is being used, and the required formats on the certificate are being followed. Also, it should check the Certificate Revocation List to make sure the validness of the certificate has not been revoked. 
+
+5)
+a) 16 suites
+b) Cipher Suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (0xc02f)
+c) Returned were two packets containing certificates, each packet containing two certificates. Each packet contained one certificate issued to *.canvaslms.com and one to DigiCert SHA2 Secure Server CA, and all were signed using SHA256WithRSAEncryption. 
+d) DigiCert Global Root CA
+e) There is a Diffie-Hellman exchange observed, with two Client Key exchange packets and two Server Key exchange packets. These all had EC Diffie-Hellman Params of Pubkey Length and then the actual public key. The server key exchange also had parameters of  curve type and name (for the eliptic curve) and the signature, signature hash algorithm, and signature length. 
+f) 25
+g) Version 1.2
